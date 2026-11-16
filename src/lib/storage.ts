@@ -1,6 +1,7 @@
 import type { AppState, Command, Conversation, SavedPrompt, Settings, UserFeedbackEntry } from '@/src/types';
 
-export const STORAGE_KEY = 'srishti_app_state';
+export const STORAGE_KEY = 'vivekam_app_state';
+export const LEGACY_STORAGE_KEY = 'srishti_app_state';
 export const CURRENT_SCHEMA_VERSION = 1;
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -151,7 +152,9 @@ export function loadAppState(): AppState {
     if (typeof window === 'undefined' || !window.localStorage) {
       return createInitialState();
     }
-    const rawStr = window.localStorage.getItem(STORAGE_KEY);
+    const rawStr =
+      window.localStorage.getItem(STORAGE_KEY) ??
+      window.localStorage.getItem(LEGACY_STORAGE_KEY);
     if (!rawStr) return createInitialState();
     const parsed = JSON.parse(rawStr);
     return migrateAppState(parsed);

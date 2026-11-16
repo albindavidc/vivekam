@@ -6,31 +6,28 @@ import {
   Trash2,
   Download,
   Upload,
-  Terminal,
+  ExternalLink,
   Star,
   Plus,
 } from 'lucide-react';
 import { useDebounce } from '@/src/hooks/useDebounce';
 import { useAllCommands, useAppStore } from '@/src/store/useAppStore';
 
-type LibraryTab = 'all' | 'prompts' | 'answers' | 'custom' | 'history' | 'favorites';
+type LibraryTab = 'all' | 'prompts' | 'answers' | 'custom' | 'favorites';
 
 export const MyLibrary: React.FC = () => {
   const allCommands = useAllCommands();
   const savedPrompts = useAppStore((s) => s.savedPrompts);
   const customCommands = useAppStore((s) => s.customCommands);
-  const conversations = useAppStore((s) => s.conversations);
   const favoriteCommandIds = useAppStore((s) => s.favoriteCommandIds);
 
   const duplicateSavedPrompt = useAppStore((s) => s.duplicateSavedPrompt);
   const togglePinSavedPrompt = useAppStore((s) => s.togglePinSavedPrompt);
   const deleteSavedPrompt = useAppStore((s) => s.deleteSavedPrompt);
   const deleteCustomCommand = useAppStore((s) => s.deleteCustomCommand);
-  const deleteConversation = useAppStore((s) => s.deleteConversation);
   const toggleFavoriteCommand = useAppStore((s) => s.toggleFavoriteCommand);
-  const setActiveConversation = useAppStore((s) => s.setActiveConversation);
   const setActiveScreen = useAppStore((s) => s.setActiveScreen);
-  const sendToWorkbench = useAppStore((s) => s.sendToWorkbench);
+  const openPromptInChatGpt = useAppStore((s) => s.openPromptInChatGpt);
   const exportAllJson = useAppStore((s) => s.exportAllJson);
   const importAllJson = useAppStore((s) => s.importAllJson);
   const showToast = useAppStore((s) => s.showToast);
@@ -85,10 +82,10 @@ export const MyLibrary: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `srishti-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `vivekam-backup-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    showToast('Exported Srishti data as JSON', 'success');
+    showToast('Exported Vivekam data as JSON', 'success');
   };
 
   const handleImportFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -153,7 +150,6 @@ export const MyLibrary: React.FC = () => {
               { id: 'prompts', label: 'Prompts' },
               { id: 'answers', label: 'Answers' },
               { id: 'custom', label: `Custom (${customCommands.length})` },
-              { id: 'history', label: `History (${conversations.length})` },
               { id: 'favorites', label: `Favourites (${favoriteCommandIds.length})` },
             ] as const
           ).map((item) => (
@@ -208,7 +204,7 @@ export const MyLibrary: React.FC = () => {
             <div className="rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121620] p-10 text-center space-y-3">
               <p className="font-display text-base font-semibold">Nothing saved here yet</p>
               <p className="text-sm text-slate-500">
-                Save answers from the Workbench or build structured prompts in the Prompt Builder.
+                Save reports from the Feedback Studio or build structured prompts in the Prompt Builder.
               </p>
               <button
                 type="button"
@@ -256,11 +252,11 @@ export const MyLibrary: React.FC = () => {
                     <div className="flex items-center gap-1.5">
                       <button
                         type="button"
-                        onClick={() => sendToWorkbench(item.content, item.commands)}
+                        onClick={() => openPromptInChatGpt(item.content, item.commands)}
                         className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-amber-500/15 text-amber-700 dark:text-amber-300 cursor-pointer"
                       >
-                        <Terminal className="w-3.5 h-3.5" />
-                        Use
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        Try in ChatGPT
                       </button>
                       <button
                         type="button"
@@ -347,54 +343,6 @@ export const MyLibrary: React.FC = () => {
         </div>
       )}
 
-      {/* History Tab */}
-      {tab === 'history' && (
-        <div className="space-y-3">
-          {conversations.length === 0 ? (
-            <div className="rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121620] p-10 text-center text-sm text-slate-500">
-              No workbench conversations yet.
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {conversations.map((c) => (
-                <div
-                  key={c.id}
-                  className="rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#121620] p-4 flex items-center justify-between gap-4"
-                >
-                  <div className="min-w-0">
-                    <p className="font-medium text-sm truncate">{c.title}</p>
-                    <p className="text-xs text-slate-500 tabular-nums">
-                      {c.messages.length} messages · Updated{' '}
-                      {new Date(c.updatedAt).toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setActiveConversation(c.id);
-                        setActiveScreen('workbench');
-                      }}
-                      className="px-3 py-1.5 rounded-xl text-xs font-medium bg-amber-500/15 text-amber-700 dark:text-amber-300 cursor-pointer"
-                    >
-                      Open
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => deleteConversation(c.id)}
-                      className="p-1.5 text-slate-400 hover:text-rose-500 cursor-pointer"
-                      aria-label="Delete conversation"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
       {/* Favorites Tab */}
       {tab === 'favorites' && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -418,10 +366,10 @@ export const MyLibrary: React.FC = () => {
               <p className="text-xs text-slate-500">{cmd.shortDescription}</p>
               <button
                 type="button"
-                onClick={() => sendToWorkbench('', [cmd.slash])}
+                onClick={() => openPromptInChatGpt('', [cmd.slash])}
                 className="w-full py-2 rounded-xl text-xs font-medium bg-slate-100 dark:bg-white/5 hover:bg-amber-500/15 cursor-pointer"
               >
-                Use in Workbench
+                Try in ChatGPT
               </button>
             </div>
           ))}

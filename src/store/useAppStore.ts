@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { BUILT_IN_COMMANDS } from '@/src/data/commands';
+import { buildChatGptPrompt, openInChatGpt, resolveCommandsFromSlashes } from '@/src/lib/chatgpt';
 import {
   DEFAULT_SETTINGS,
   createInitialState,
@@ -25,24 +26,16 @@ export interface ToastItem {
   tone?: 'info' | 'success' | 'warning' | 'error';
 }
 
-interface WorkbenchDraft {
-  text: string;
-  commandSlashes: string[];
-  nonce: number;
-}
-
-interface SrishtiStore extends AppState {
+interface VivekamStore extends AppState {
   activeScreen: ActiveScreen;
   toasts: ToastItem[];
-  workbenchDraft: WorkbenchDraft | null;
 
   setActiveScreen: (screen: ActiveScreen) => void;
   showToast: (message: string, tone?: ToastItem['tone']) => void;
   dismissToast: (id: string) => void;
 
-  // Workbench prefill
-  sendToWorkbench: (text: string, commandSlashes?: string[]) => void;
-  clearWorkbenchDraft: () => void;
+  // External ChatGPT redirect for Try buttons
+  openPromptInChatGpt: (text: string, commandSlashes?: string[]) => void;
 
   // Conversations & Messages
   createConversation: (title?: string) => string;
@@ -97,11 +90,10 @@ function persistFromState(state: AppState) {
   saveAppState(snapshot);
 }
 
-export const useAppStore = create<SrishtiStore>((set, get) => ({
+export const useAppStore = create<VivekamStore>((set, get) => ({
   ...initialPersisted,
   activeScreen: 'explore',
   toasts: [],
-  workbenchDraft: null,
 
   setActiveScreen: (screen) => set({ activeScreen: screen }),
 
@@ -116,13 +108,19 @@ export const useAppStore = create<SrishtiStore>((set, get) => ({
   dismissToast: (id) =>
     set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
 
-  sendToWorkbench: (text, commandSlashes = []) =>
-    set({
-      activeScreen: 'workbench',
-      workbenchDraft: { text, commandSlashes, nonce: Date.now() },
-    }),
-
-  clearWorkbenchDraft: () => set({ workbenchDraft: null }),
+  openPromptInChatGpt: (text, commandSlashes = []) => {
+    const state = get();
+    const allCmds = [...BUILT_IN_COMMANDS, ...state.customCommands];
+    const effectiveSlashes =
+      commandSlashes.length > 0 ? commandSlashes : state.settings.defaultCommands;
+    const cmds = resolveCommandsFromSlashes(effectiveSlashes, allCmds);
+    const fullPrompt = buildChatGptPrompt(text, cmds, state.settings.commandOverrides);
+    if (fullPrompt) {
+      navigator.clipboard?.writeText(fullPrompt);
+    }
+    openInChatGpt(text, cmds, state.settings.commandOverrides);
+    state.showToast('Opening ChatGPT with your Vivekam prompt', 'success');
+  },
 
   createConversation: (title = 'New Session') => {
     const id = makeId('conv');
@@ -434,7 +432,6 @@ export const useAppStore = create<SrishtiStore>((set, get) => ({
     set({
       ...fresh,
       settings: { ...DEFAULT_SETTINGS },
-      workbenchDraft: null,
     });
     persistFromState(fresh);
   },

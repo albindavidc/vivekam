@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Gauge, Copy, Check, Terminal, ArrowRight, RotateCcw } from 'lucide-react';
+import { Gauge, Copy, Check, ExternalLink, ArrowRight, RotateCcw } from 'lucide-react';
 import { generateJSON, getFriendlyErrorMessage } from '@/src/lib/gemini';
 import { ANALYZER_RESULT_SCHEMA, isAnalyzerResult } from '@/src/lib/schemas';
 import { useAppStore } from '@/src/store/useAppStore';
@@ -20,7 +20,7 @@ function computeLineDiff(beforeText: string, afterText: string) {
 
 export const PromptAnalyzer: React.FC = () => {
   const settings = useAppStore((s) => s.settings);
-  const sendToWorkbench = useAppStore((s) => s.sendToWorkbench);
+  const openPromptInChatGpt = useAppStore((s) => s.openPromptInChatGpt);
   const showToast = useAppStore((s) => s.showToast);
 
   const [promptInput, setPromptInput] = useState(
@@ -44,7 +44,7 @@ export const PromptAnalyzer: React.FC = () => {
         model: settings.model,
         contents: `Analyze and score this user prompt:\n\n"""\n${promptInput}\n"""`,
         systemInstruction:
-          'You are a principal prompt engineer. Score the user prompt from 0 to 10 on Clarity, Context, Specificity, Constraints, OutputFormat, and Safety. Identify concrete issues with exact fixes, write an improved version of the prompt, and recommend 1 to 3 Srishti slash commands from: /ELI5, /TLDR, /deepdive, /examples, /stepbystep, /brutal, /redteam, /realitycheck, /no-fluff, /debug, /code-review, /senior-engineer, /startup-mode, /validate-idea, /ROI, /rewrite, /hooks, /decision, /action-plan, /80-20.',
+          'You are a principal prompt engineer. Score the user prompt from 0 to 10 on Clarity, Context, Specificity, Constraints, OutputFormat, and Safety. Identify concrete issues with exact fixes, write an improved version of the prompt, and recommend 1 to 3 Vivekam slash commands from: /ELI5, /TLDR, /deepdive, /examples, /stepbystep, /brutal, /redteam, /realitycheck, /no-fluff, /debug, /code-review, /senior-engineer, /startup-mode, /validate-idea, /ROI, /rewrite, /hooks, /decision, /action-plan, /80-20.',
         responseSchema: ANALYZER_RESULT_SCHEMA,
         thinkingLevel: settings.thinkingLevel,
         validator: isAnalyzerResult,
@@ -185,7 +185,7 @@ export const PromptAnalyzer: React.FC = () => {
                       </span>
                       <button
                         type="button"
-                        onClick={() => sendToWorkbench(result.improvedPrompt, [cmd.slash])}
+                        onClick={() => openPromptInChatGpt(result.improvedPrompt, [cmd.slash])}
                         className="inline-flex items-center gap-1 text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-amber-500 cursor-pointer"
                       >
                         Try
@@ -199,15 +199,15 @@ export const PromptAnalyzer: React.FC = () => {
               <button
                 type="button"
                 onClick={() =>
-                  sendToWorkbench(
+                  openPromptInChatGpt(
                     result.improvedPrompt,
                     result.suggestedCommands.map((c) => c.slash)
                   )
                 }
                 className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold bg-amber-500/15 text-amber-700 dark:text-amber-300 hover:bg-amber-500/25 cursor-pointer"
               >
-                <Terminal className="w-3.5 h-3.5" />
-                Open Rewrite + All Suggested Commands
+                <ExternalLink className="w-3.5 h-3.5" />
+                Try Rewrite + Suggested Commands in ChatGPT
               </button>
             </div>
 

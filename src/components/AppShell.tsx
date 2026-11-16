@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   Compass,
-  TerminalSquare,
   BookOpen,
   ShieldAlert,
   Hammer,
@@ -16,6 +15,9 @@ import {
   Menu,
   X,
   ChevronRight,
+  ExternalLink,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 import { useAppStore } from '@/src/store/useAppStore';
 import type { ActiveScreen } from '@/src/types';
@@ -30,7 +32,6 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { id: 'explore', label: 'Explore', labelMl: 'തുടക്കം', icon: Compass, section: 'core' },
-  { id: 'workbench', label: 'Workbench', labelMl: 'വർക്ക്ബെഞ്ച്', icon: TerminalSquare, section: 'core' },
   { id: 'library-commands', label: 'Commands', labelMl: 'കമാൻഡുകൾ', icon: BookOpen, section: 'core' },
   { id: 'feedback-studio', label: 'Feedback Studio', labelMl: 'ഫീഡ്ബാക്ക്', icon: ShieldAlert, section: 'studios' },
   { id: 'builder', label: 'Prompt Builder', labelMl: 'ബിൽഡർ', icon: Hammer, section: 'studios' },
@@ -42,14 +43,14 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'help', label: 'Help & FAQ', labelMl: 'സഹായം', icon: HelpCircle, section: 'manage' },
 ];
 
-const MOBILE_PRIMARY_TABS: ActiveScreen[] = ['explore', 'workbench', 'library-commands', 'feedback-studio'];
+const MOBILE_PRIMARY_TABS: ActiveScreen[] = ['explore', 'library-commands', 'feedback-studio', 'setup'];
 
-export const SrishtiLogoMark: React.FC<{ className?: string }> = ({ className = 'w-7 h-7' }) => (
+export const VivekamLogoMark: React.FC<{ className?: string }> = ({ className = 'w-7 h-7' }) => (
   <svg viewBox="0 0 32 32" fill="none" className={className} aria-hidden="true">
     <rect width="32" height="32" rx="9" className="fill-amber-500/15 dark:fill-amber-500/20" />
     <path
       d="M19.5 7.5L12.5 24.5"
-      stroke="url(#srishtiGrad)"
+      stroke="url(#vivekamGrad)"
       strokeWidth="2.8"
       strokeLinecap="round"
     />
@@ -70,7 +71,7 @@ export const SrishtiLogoMark: React.FC<{ className?: string }> = ({ className = 
       className="text-slate-700 dark:text-slate-200"
     />
     <defs>
-      <linearGradient id="srishtiGrad" x1="12.5" y1="7.5" x2="19.5" y2="24.5" gradientUnits="userSpaceOnUse">
+      <linearGradient id="vivekamGrad" x1="12.5" y1="7.5" x2="19.5" y2="24.5" gradientUnits="userSpaceOnUse">
         <stop stopColor="#F59E0B" />
         <stop offset="1" stopColor="#F97316" />
       </linearGradient>
@@ -86,6 +87,25 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   const updateSettings = useAppStore((s) => s.updateSettings);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
+    try {
+      return window.localStorage.getItem('vivekam_sidebar_collapsed') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed((prev) => {
+      const next = !prev;
+      try {
+        window.localStorage.setItem('vivekam_sidebar_collapsed', String(next));
+      } catch {
+        // ignore storage errors
+      }
+      return next;
+    });
+  };
 
   const activeItem = NAV_ITEMS.find((n) => n.id === activeScreen) ?? NAV_ITEMS[0];
 
@@ -107,28 +127,39 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     const items = NAV_ITEMS.filter((i) => i.section === sectionKey);
     return (
       <div className="space-y-1">
-        <div className="px-3 pb-1 text-xs font-medium text-slate-500 dark:text-slate-400">
-          {title}
-        </div>
+        {sidebarCollapsed ? (
+          sectionKey !== 'core' && (
+            <div className="mx-2 my-2 border-t border-slate-200 dark:border-white/[0.06]" />
+          )
+        ) : (
+          <div className="px-3 pb-1 text-xs font-medium text-slate-500 dark:text-slate-400">
+            {title}
+          </div>
+        )}
         {items.map((item) => {
           const Icon = item.icon;
           const active = activeScreen === item.id;
+          const labelText = language === 'ml' ? item.labelMl : item.label;
           return (
             <button
               key={item.id}
               type="button"
               onClick={() => handleNavSelect(item.id)}
               aria-current={active ? 'page' : undefined}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
+              aria-label={sidebarCollapsed ? labelText : undefined}
+              title={sidebarCollapsed ? labelText : undefined}
+              className={`w-full flex items-center ${
+                sidebarCollapsed ? 'justify-center px-2.5' : 'gap-3 px-3'
+              } py-2.5 rounded-xl text-sm font-medium transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
                 active
                   ? 'bg-gradient-to-r from-amber-500/15 to-orange-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/25'
                   : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-950 dark:hover:text-white border border-transparent'
               }`}
             >
               <Icon className="w-4 h-4 shrink-0" />
-              <span className="truncate whitespace-nowrap">
-                {language === 'ml' ? item.labelMl : item.label}
-              </span>
+              {!sidebarCollapsed && (
+                <span className="truncate whitespace-nowrap">{labelText}</span>
+              )}
             </button>
           );
         })}
@@ -139,39 +170,71 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   return (
     <div className="min-h-dvh flex flex-col md:flex-row bg-[#F7F8FA] dark:bg-[#0B0D12] text-slate-900 dark:text-slate-100">
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex md:w-64 md:shrink-0 md:flex-col border-r border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#0F1219] sticky top-0 h-dvh">
-        <div className="h-16 px-5 flex items-center justify-between border-b border-slate-200 dark:border-white/[0.08]">
+      <aside
+        className={`hidden md:flex ${
+          sidebarCollapsed ? 'md:w-[76px]' : 'md:w-64'
+        } md:shrink-0 md:flex-col border-r border-slate-200 dark:border-white/[0.08] bg-white dark:bg-[#0F1219] sticky top-0 h-dvh transition-all duration-200`}
+      >
+        <div
+          className={`h-16 ${
+            sidebarCollapsed ? 'px-3 justify-center' : 'px-4 justify-between'
+          } flex items-center border-b border-slate-200 dark:border-white/[0.08] gap-2`}
+        >
+          {!sidebarCollapsed && (
+            <button
+              type="button"
+              onClick={() => handleNavSelect('explore')}
+              className="flex items-center gap-2.5 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded-lg min-w-0"
+            >
+              <VivekamLogoMark className="w-7 h-7 shrink-0" />
+              <span className="font-display text-lg font-bold tracking-tight text-slate-900 dark:text-white whitespace-nowrap shrink-0">
+                Vivekam
+              </span>
+            </button>
+          )}
+
           <button
             type="button"
-            onClick={() => handleNavSelect('explore')}
-            className="flex items-center gap-2.5 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded-lg"
+            onClick={toggleSidebar}
+            aria-expanded={!sidebarCollapsed}
+            aria-label={sidebarCollapsed ? 'Expand navigation sidebar' : 'Collapse navigation sidebar'}
+            title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            className="p-2 rounded-lg border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-950 dark:hover:text-white transition shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
           >
-            <SrishtiLogoMark className="w-7 h-7 shrink-0" />
-            <span className="font-display text-lg font-bold tracking-tight text-slate-900 dark:text-white whitespace-nowrap shrink-0">
-              Srishti
-            </span>
+            {sidebarCollapsed ? (
+              <PanelLeftOpen className="w-4 h-4" />
+            ) : (
+              <PanelLeftClose className="w-4 h-4" />
+            )}
           </button>
         </div>
 
-        <nav aria-label="Primary navigation" className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
+        <nav aria-label="Primary navigation" className="flex-1 overflow-y-auto overscroll-contain px-3 py-4 space-y-6">
           {renderSection('core', language === 'ml' ? 'പ്രധാനം' : 'Workspace')}
           {renderSection('studios', language === 'ml' ? 'സ്റ്റുഡിയോകൾ' : 'Prompt Studios')}
           {renderSection('manage', language === 'ml' ? 'സിസ്റ്റം' : 'Library & System')}
         </nav>
 
-        <div className="p-3 border-t border-slate-200 dark:border-white/[0.08] flex items-center justify-between gap-2">
+        <div
+          className={`p-3 border-t border-slate-200 dark:border-white/[0.08] flex ${
+            sidebarCollapsed ? 'flex-col items-center' : 'items-center justify-between'
+          } gap-2`}
+        >
           <button
             type="button"
             onClick={toggleLanguage}
-            className="px-3 py-2 rounded-lg text-xs font-medium border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 transition whitespace-nowrap shrink-0 cursor-pointer"
+            className={`${
+              sidebarCollapsed ? 'w-full px-1 py-2 text-center' : 'px-3 py-2'
+            } rounded-lg text-xs font-medium border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 transition whitespace-nowrap shrink-0 cursor-pointer`}
             title="Switch UI language (English / മലയാളം)"
           >
-            {language === 'en' ? 'EN / മലയാളം' : 'മലയാളം / EN'}
+            {sidebarCollapsed ? (language === 'en' ? 'EN' : 'ML') : language === 'en' ? 'EN / മലയാളം' : 'മലയാളം / EN'}
           </button>
           <button
             type="button"
             onClick={toggleTheme}
             aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+            title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
             className="p-2 rounded-lg border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 transition cursor-pointer"
           >
             {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
@@ -188,11 +251,11 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
               type="button"
               onClick={() => handleNavSelect('explore')}
               className="md:hidden flex items-center gap-2 shrink-0"
-              aria-label="Srishti Home"
+              aria-label="Vivekam Home"
             >
-              <SrishtiLogoMark className="w-6 h-6" />
+              <VivekamLogoMark className="w-6 h-6" />
               <span className="font-display font-bold text-base text-slate-900 dark:text-white whitespace-nowrap">
-                Srishti
+                Vivekam
               </span>
             </button>
             <span className="md:hidden text-slate-300 dark:text-slate-700" aria-hidden="true">/</span>
@@ -210,15 +273,15 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             >
               {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
-            {activeScreen !== 'workbench' && (
-              <button
-                type="button"
-                onClick={() => handleNavSelect('workbench')}
-                className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 hover:brightness-105 transition whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
-              >
-                {language === 'ml' ? 'വർക്ക്ബെഞ്ച് തുറക്കുക' : 'Open Workbench'}
-              </button>
-            )}
+            <a
+              href="https://chatgpt.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 hover:brightness-105 transition whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+            >
+              {language === 'ml' ? 'ChatGPT തുറക്കുക' : 'Open ChatGPT'}
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
           </div>
         </header>
 

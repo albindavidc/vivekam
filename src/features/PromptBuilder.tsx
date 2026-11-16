@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Sparkles, Copy, Bookmark, Terminal, Play, X, Check } from 'lucide-react';
+import { Sparkles, Copy, Bookmark, ExternalLink, Play, X, Check } from 'lucide-react';
 import { PROMPT_TEMPLATES } from '@/src/data/templates';
 import { estimateTokens } from '@/src/lib/commandEngine';
 import { generateJSON, getFriendlyErrorMessage } from '@/src/lib/gemini';
@@ -13,7 +13,7 @@ import { useAppStore } from '@/src/store/useAppStore';
 export const PromptBuilder: React.FC = () => {
   const settings = useAppStore((s) => s.settings);
   const savePromptItem = useAppStore((s) => s.savePromptItem);
-  const sendToWorkbench = useAppStore((s) => s.sendToWorkbench);
+  const openPromptInChatGpt = useAppStore((s) => s.openPromptInChatGpt);
   const showToast = useAppStore((s) => s.showToast);
 
   const [role, setRole] = useState('Senior software architect');
@@ -109,12 +109,12 @@ export const PromptBuilder: React.FC = () => {
     }
   };
 
-  const handleRunInWorkbench = () => {
+  const handleTryInChatGpt = () => {
     if (detectedVariables.length > 0) {
       setVarModalOpen(true);
       return;
     }
-    sendToWorkbench(assembledPrompt, attachedCommands);
+    openPromptInChatGpt(assembledPrompt, attachedCommands);
   };
 
   return (
@@ -290,11 +290,11 @@ export const PromptBuilder: React.FC = () => {
           <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
-              onClick={handleRunInWorkbench}
+              onClick={handleTryInChatGpt}
               className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 hover:brightness-105 cursor-pointer whitespace-nowrap"
             >
-              <Terminal className="w-3.5 h-3.5" />
-              {detectedVariables.length > 0 ? 'Fill Variables & Run' : 'Run in Workbench'}
+              <ExternalLink className="w-3.5 h-3.5" />
+              {detectedVariables.length > 0 ? 'Fill Variables & Try in ChatGPT' : 'Try in ChatGPT'}
             </button>
 
             <button
@@ -379,12 +379,12 @@ export const PromptBuilder: React.FC = () => {
                 onClick={() => {
                   const filled = fillVariablesIntoPrompt(varValues);
                   setVarModalOpen(false);
-                  sendToWorkbench(filled, attachedCommands);
+                  openPromptInChatGpt(filled, attachedCommands);
                 }}
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 cursor-pointer"
               >
                 <Play className="w-3.5 h-3.5" />
-                Open in Workbench
+                Open in ChatGPT
               </button>
             </div>
           </div>

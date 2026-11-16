@@ -4,12 +4,12 @@ import { useAppStore } from '@/src/store/useAppStore';
 
 const FAQ_ITEMS = [
   {
-    q: 'Do I need a paid plan to use Srishti or slash commands?',
-    a: 'No. Srishti runs on the fast Gemini model by default, and the Always-On Setup prompt works on free tiers of ChatGPT, Claude, and Gemini too. Only optional heavy-reasoning models in Settings require a paid billing key.',
+    q: 'Do I need a paid plan to use Vivekam or slash commands?',
+    a: 'No. Vivekam runs on the fast Gemini model by default for its studios, and the Always-On Setup prompt works on free tiers of ChatGPT, Claude, and Gemini too. Only optional heavy-reasoning models in Settings require a paid billing key.',
   },
   {
     q: 'Can I write in Malayalam or Manglish?',
-    a: 'Yes! You can write your full message in Malayalam script (മലയാളം) or Manglish (for example: "Ee startup idea sherikkum work aakumo? /redteam"). Srishti instructs Gemini to reply in the language you wrote in while keeping slash command words in English.',
+    a: 'Yes! You can write your full message in Malayalam script (മലയാളം) or Manglish (for example: "Ee startup idea sherikkum work aakumo? /redteam"). Vivekam instructs the model to reply in the language you wrote in while keeping slash command words in English.',
   },
   {
     q: 'Which command should I try first?',
@@ -17,7 +17,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'Why was my command ignored or only partially followed?',
-    a: 'Two common reasons: (1) If you typed a slash inside a URL or file path without a space before it, Srishti intentionally ignores it so file paths are not broken. (2) If you combined two conflicting commands like /TLDR and /deepdive, Srishti follows the one appearing last.',
+    a: 'Two common reasons: (1) If you typed a slash inside a URL or file path without a space before it, Vivekam intentionally ignores it so file paths are not broken. (2) If you combined two conflicting commands like /TLDR and /deepdive, Vivekam follows the one appearing last.',
   },
   {
     q: 'Should I trust the answer fully for medical, legal, or money decisions?',
@@ -50,7 +50,7 @@ export const HelpFaq: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'srishti-feedback.json';
+    a.download = 'vivekam-feedback.json';
     a.click();
     URL.revokeObjectURL(url);
     showToast('Feedback exported as JSON', 'success');

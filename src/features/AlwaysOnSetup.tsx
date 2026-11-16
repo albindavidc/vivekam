@@ -11,7 +11,7 @@ const PLATFORM_CARDS = [
     name: 'ChatGPT',
     steps: [
       'Open Settings > Personalization > Custom instructions.',
-      'Paste the Srishti setup block into "How would you like ChatGPT to respond?".',
+      'Paste the Vivekam setup block into "How would you like ChatGPT to respond?".',
       'Save. Now any message ending with /redteam or /ELI5 follows those rules.',
     ],
   },

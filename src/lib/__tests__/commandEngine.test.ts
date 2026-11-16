@@ -7,14 +7,59 @@ import {
   fuzzyMatchCommands,
   parseMessage,
 } from '@/src/lib/commandEngine';
+import { buildChatGptPrompt, buildChatGptUrl } from '@/src/lib/chatgpt';
 import { CURRENT_SCHEMA_VERSION, migrateAppState } from '@/src/lib/storage';
 import type { Command } from '@/src/types';
 
-describe('Srishti Command Registry', () => {
-  it('contains all 48 built-in commands across 6 groups', () => {
+const EXPECTED_BY_GROUP: Record<string, string[]> = {
+  learn: ['/ELI5', '/ELI10', '/TLDR', '/deepdive', '/examples', '/analogy', '/stepbystep', '/beginner'],
+  feedback: ['/brutal', '/devilsadvocate', '/challenge', '/pros-cons', '/redteam', '/realitycheck', '/steelman', '/no-fluff'],
+  coding: ['/debug', '/code-review', '/optimize', '/explain-code', '/test-cases', '/edge-cases', '/senior-engineer', '/security-review'],
+  business: ['/startup-mode', '/business-plan', '/validate-idea', '/ROI', '/career-coach', '/interview-mode', '/prioritize', '/opportunity-cost'],
+  writing: ['/rewrite', '/professional', '/casual', '/persuasive', '/shorten', '/humanize', '/hooks', '/viral'],
+  decisions: ['/decision', '/checklist', '/action-plan', '/80-20', '/priorities', '/what-if', '/second-opinion', '/coach-me'],
+};
+
+describe('Vivekam Command Registry', () => {
+  it('contains all 48 built-in commands across 6 groups without duplicates or omissions', () => {
     expect(BUILT_IN_COMMANDS).toHaveLength(48);
-    const groups = new Set(BUILT_IN_COMMANDS.map((c) => c.group));
-    expect(groups.size).toBe(6);
+    const ids = new Set(BUILT_IN_COMMANDS.map((c) => c.id));
+    const slashes = new Set(BUILT_IN_COMMANDS.map((c) => c.slash.toLowerCase()));
+    expect(ids.size).toBe(48);
+    expect(slashes.size).toBe(48);
+
+    for (const [group, expectedSlashes] of Object.entries(EXPECTED_BY_GROUP)) {
+      const actualSlashes = BUILT_IN_COMMANDS.filter((c) => c.group === group).map((c) => c.slash);
+      expect(actualSlashes).toEqual(expectedSlashes);
+    }
+  });
+
+  it('includes all 7 deal-check commands from the reference sheet', () => {
+    const dealCheckCommands = [
+      '/realitycheck',
+      '/pros-cons',
+      '/decision',
+      '/second-opinion',
+      '/redteam',
+      '/no-fluff',
+      '/opportunity-cost',
+    ];
+    const available = new Set(BUILT_IN_COMMANDS.map((c) => c.slash));
+    for (const cmd of dealCheckCommands) {
+      expect(available.has(cmd)).toBe(true);
+    }
+  });
+
+  it('parses all 48 commands case-insensitively and includes all 48 in Always-On Setup', () => {
+    const compactSetup = buildAlwaysOnSetup(BUILT_IN_COMMANDS, 'compact');
+    const detailedSetup = buildAlwaysOnSetup(BUILT_IN_COMMANDS, 'detailed');
+
+    for (const cmd of BUILT_IN_COMMANDS) {
+      const parsed = parseMessage(`Test query ${cmd.slash.toLowerCase()}`, BUILT_IN_COMMANDS);
+      expect(parsed.commands.map((c) => c.id)).toEqual([cmd.id]);
+      expect(compactSetup).toContain(cmd.slash);
+      expect(detailedSetup).toContain(cmd.slash);
+    }
   });
 });
 
@@ -135,5 +180,24 @@ describe('fuzzyMatchCommands & migrateAppState', () => {
     expect(migrated.settings.model).toBe('gemini-4-hydrogen');
     expect(migrated.settings.theme).toBe('light');
     expect(migrated.customCommands[0].isCustom).toBe(true);
+  });
+});
+
+describe('buildChatGptUrl & buildChatGptPrompt', () => {
+  it('builds a valid https://chatgpt.com/?q= URL with directives embedded', () => {
+    const redteam = BUILT_IN_COMMANDS.find((c) => c.id === 'redteam')!;
+    const url = buildChatGptUrl('Launch a cafe in Kochi', [redteam]);
+    expect(url.startsWith('https://chatgpt.com/?q=')).toBe(true);
+    const decoded = decodeURIComponent(url.replace('https://chatgpt.com/?q=', ''));
+    expect(decoded).toContain('Launch a cafe in Kochi');
+    expect(decoded).toContain('/redteam');
+    expect(decoded).toContain('Vivekam Command Directives');
+  });
+
+  it('handles empty user text gracefully when trying a command directly', () => {
+    const eli5 = BUILT_IN_COMMANDS.find((c) => c.id === 'eli5')!;
+    const prompt = buildChatGptPrompt('', [eli5]);
+    expect(prompt).toContain('/ELI5');
+    expect(prompt).toContain('Please apply /ELI5');
   });
 });

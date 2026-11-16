@@ -146,7 +146,6 @@ export interface UserFeedbackEntry {
 
 export type ActiveScreen =
   | 'explore'
-  | 'workbench'
   | 'library-commands'
   | 'feedback-studio'
   | 'builder'

@@ -23,7 +23,7 @@ export class ErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error) {
-    console.error('Srishti UI ErrorBoundary:', error.message);
+    console.error('Vivekam UI ErrorBoundary:', error.message);
   }
 
   render() {
@@ -33,7 +33,7 @@ export class ErrorBoundary extends React.Component<
           <div className="max-w-md w-full rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121620] p-6 space-y-4">
             <div className="flex items-center gap-3 text-amber-600 dark:text-amber-400">
               <AlertTriangle className="w-6 h-6 shrink-0" />
-              <h1 className="text-lg font-semibold">Something interrupted Srishti</h1>
+              <h1 className="text-lg font-semibold">Something interrupted Vivekam</h1>
             </div>
             <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
               {this.state.message}

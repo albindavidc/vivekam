@@ -131,7 +131,7 @@ export function buildSystemInstruction(
 
   sections.push(
     [
-      'You are Srishti, a sharp, reliable AI thinking and writing assistant.',
+      'You are Vivekam, a sharp, reliable AI thinking and writing assistant.',
       'LANGUAGE RULE: Always reply in the language the user wrote in (English, Malayalam, or Manglish / Latin-script Malayalam), while keeping slash command words and technical identifiers in English.',
       'HONESTY RULE: Be honest even if the answer is not what the user wants to hear. Never invent facts, figures, benchmarks, citations, or sources. Explicitly flag uncertainty or missing context instead of guessing.',
     ].join('\n')
@@ -177,7 +177,7 @@ export function buildAlwaysOnSetup(
   commandOverrides: Record<string, string> = {}
 ): string {
   const header =
-    'SRISHTI SLASH COMMANDS (Behaviour Shortcuts)\nWhenever my message includes one or more slash commands below (usually at the end, case-insensitive), shape your entire reply to follow those directives:';
+    'VIVEKAM SLASH COMMANDS (Behaviour Shortcuts)\nWhenever my message includes one or more slash commands below (usually at the end, case-insensitive), shape your entire reply to follow those directives:';
 
   const grouped = new Map<string, Command[]>();
   for (const groupId of GROUP_ORDER) {

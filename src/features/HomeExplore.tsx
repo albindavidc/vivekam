@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
-import { ArrowRight, Copy, Check, AlertCircle, Sparkles, Sliders, Terminal } from 'lucide-react';
+import { ArrowRight, Copy, Check, AlertCircle, Sparkles, Sliders, ExternalLink } from 'lucide-react';
 import { COMMAND_GROUPS } from '@/src/data/commands';
+import { buildChatGptUrl } from '@/src/lib/chatgpt';
 import { buildSystemInstruction, detectConflicts, estimateTokens, parseMessage } from '@/src/lib/commandEngine';
 import { useAllCommands, useAppStore } from '@/src/store/useAppStore';
 import { CommandChipButton } from '@/src/components/CommandChipButton';
@@ -35,7 +36,7 @@ const TRY_FIRST_IDS = [
 export const HomeExplore: React.FC = () => {
   const allCommands = useAllCommands();
   const setActiveScreen = useAppStore((s) => s.setActiveScreen);
-  const sendToWorkbench = useAppStore((s) => s.sendToWorkbench);
+  const openPromptInChatGpt = useAppStore((s) => s.openPromptInChatGpt);
   const showToast = useAppStore((s) => s.showToast);
   const language = useAppStore((s) => s.settings.language);
   const commandOverrides = useAppStore((s) => s.settings.commandOverrides);
@@ -93,8 +94,8 @@ export const HomeExplore: React.FC = () => {
         <div className="lg:col-span-7 space-y-5">
           <p className="text-xs font-medium text-amber-600 dark:text-amber-400 tracking-wide">
             {language === 'ml'
-              ? 'സൃഷ്ടി · സ്ലാഷ് കമാൻഡ് പ്രോംപ്റ്റ് വർക്ക്ബെഞ്ച്'
-              : 'Srishti · Slash-Command Prompt Workbench'}
+              ? 'വിവേകം · സ്ലാഷ് കമാൻഡ് പ്രോംപ്റ്റ് സ്റ്റുഡിയോ'
+              : 'Vivekam · Slash-Command Prompt Studio'}
           </p>
           <h2 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-slate-950 dark:text-white leading-[1.08] text-balance">
             One word changes the answer.
@@ -108,25 +109,25 @@ export const HomeExplore: React.FC = () => {
             <code className="font-mono text-sm px-1.5 py-0.5 rounded bg-slate-200/70 dark:bg-white/10 text-sky-700 dark:text-sky-300">
               /ELI5 /no-fluff
             </code>{' '}
-            to any message. Srishti expands it into a strict system directive so Gemini answers
+            to any message. Vivekam turns it into a crisp directive so ChatGPT and Gemini answer
             blunter, simpler, or far more structured—in English, Malayalam, or Manglish.
           </p>
 
           <div className="flex flex-wrap items-center gap-3 pt-1">
             <button
               type="button"
-              onClick={() => setActiveScreen('workbench')}
+              onClick={() => setActiveScreen('library-commands')}
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 hover:brightness-105 transition whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
             >
-              Open Workbench
+              Browse {allCommands.length} Commands
               <ArrowRight className="w-4 h-4" />
             </button>
             <button
               type="button"
-              onClick={() => setActiveScreen('library-commands')}
+              onClick={() => setActiveScreen('setup')}
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-medium border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121620] text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/5 transition whitespace-nowrap shrink-0 cursor-pointer"
             >
-              Browse {allCommands.length} Commands
+              Always-On Setup
             </button>
           </div>
         </div>
@@ -156,7 +157,7 @@ export const HomeExplore: React.FC = () => {
               </span>
               <div className="space-y-1">
                 <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                  Srishti compiles the directive
+                  Vivekam compiles the directive
                 </p>
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                   Commands strip out of your message and expand into an explicit system instruction with honesty and conflict rules.
@@ -248,19 +249,20 @@ export const HomeExplore: React.FC = () => {
             )}
 
             <div className="pt-1 flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                onClick={() =>
-                  sendToWorkbench(
-                    parsedDemo.body || demoInput,
-                    activeCommands.map((c) => c.slash)
-                  )
-                }
+              <a
+                href={buildChatGptUrl(
+                  parsedDemo.body || demoInput,
+                  activeCommands,
+                  commandOverrides
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => showToast('Opening ChatGPT with your Vivekam prompt', 'success')}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 hover:brightness-105 transition whitespace-nowrap shrink-0 cursor-pointer"
               >
-                <Terminal className="w-3.5 h-3.5" />
-                Run this in Workbench
-              </button>
+                <ExternalLink className="w-3.5 h-3.5" />
+                Try in ChatGPT
+              </a>
               <button
                 type="button"
                 onClick={handleCopyExpanded}
@@ -330,12 +332,12 @@ export const HomeExplore: React.FC = () => {
                   type="button"
                   onClick={() => {
                     const parsed = parseMessage(item.sample, allCommands);
-                    sendToWorkbench(parsed.body, parsed.commands.map((c) => c.slash));
+                    openPromptInChatGpt(parsed.body, parsed.commands.map((c) => c.slash));
                   }}
                   className="inline-flex items-center justify-between w-full px-3.5 py-2.5 rounded-xl text-xs font-medium bg-slate-100 dark:bg-white/[0.05] text-slate-800 dark:text-slate-200 hover:bg-amber-500/15 hover:text-amber-700 dark:hover:text-amber-300 transition cursor-pointer"
                 >
-                  <span>Try {cmd.slash} in Workbench</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <span>Try {cmd.slash} in ChatGPT</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
                 </button>
               </div>
             );

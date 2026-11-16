@@ -5,9 +5,6 @@ import { ToastContainer } from '@/src/components/ToastContainer';
 import { HomeExplore } from '@/src/features/HomeExplore';
 import { useAppStore } from '@/src/store/useAppStore';
 
-const Workbench = lazy(() =>
-  import('@/src/features/Workbench').then((m) => ({ default: m.Workbench }))
-);
 const CommandLibrary = lazy(() =>
   import('@/src/features/CommandLibrary').then((m) => ({ default: m.CommandLibrary }))
 );
@@ -77,8 +74,6 @@ export default function App() {
     switch (activeScreen) {
       case 'explore':
         return <HomeExplore />;
-      case 'workbench':
-        return <Workbench />;
       case 'library-commands':
         return <CommandLibrary />;
       case 'feedback-studio':

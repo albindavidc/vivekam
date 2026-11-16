@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
-import { Copy, Star, Terminal, SlidersHorizontal, Search, X, RotateCcw, Check } from 'lucide-react';
+import { Copy, Star, ExternalLink, SlidersHorizontal, Search, X, RotateCcw, Check } from 'lucide-react';
 import { COMMAND_GROUPS, GROUP_ORDER } from '@/src/data/commands';
+import { buildChatGptUrl } from '@/src/lib/chatgpt';
 import { useDebounce } from '@/src/hooks/useDebounce';
 import { useAllCommands, useAppStore } from '@/src/store/useAppStore';
 import type { Command, CommandGroupId } from '@/src/types';
@@ -11,7 +12,6 @@ export const CommandLibrary: React.FC = () => {
   const toggleFavoriteCommand = useAppStore((s) => s.toggleFavoriteCommand);
   const commandOverrides = useAppStore((s) => s.settings.commandOverrides);
   const setCommandOverride = useAppStore((s) => s.setCommandOverride);
-  const sendToWorkbench = useAppStore((s) => s.sendToWorkbench);
   const showToast = useAppStore((s) => s.showToast);
 
   const [activeGroup, setActiveGroup] = useState<'all' | 'favorites' | CommandGroupId>('all');
@@ -32,8 +32,7 @@ export const CommandLibrary: React.FC = () => {
       }
     }
     return Array.from(counts.entries())
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 14)
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
       .map(([tag]) => tag);
   }, [allCommands]);
 
@@ -268,20 +267,23 @@ export const CommandLibrary: React.FC = () => {
                       )}
                       {copiedId === cmd.id ? 'Copied' : 'Copy'}
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const cleanExample = cmd.example.replace(
+                    <a
+                      href={buildChatGptUrl(
+                        cmd.example.replace(
                           new RegExp(`\\s*${cmd.slash.replace('/', '\\/')}$`, 'i'),
                           ''
-                        );
-                        sendToWorkbench(cleanExample, [cmd.slash]);
-                      }}
+                        ),
+                        [cmd],
+                        commandOverrides
+                      )}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => showToast(`Opening ${cmd.slash} in ChatGPT`, 'success')}
                       className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-amber-500/15 text-amber-700 dark:text-amber-300 hover:bg-amber-500/25 transition whitespace-nowrap cursor-pointer"
                     >
-                      <Terminal className="w-3.5 h-3.5" />
+                      <ExternalLink className="w-3.5 h-3.5" />
                       Try
-                    </button>
+                    </a>
                     <button
                       type="button"
                       onClick={() => openDetail(cmd)}

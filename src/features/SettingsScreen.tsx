@@ -31,12 +31,9 @@ const MODEL_OPTIONS: Array<{
 ];
 
 const SHORTCUTS = [
-  { keys: '/', desc: 'Open slash-command palette inside Workbench composer' },
-  { keys: '↑ / ↓', desc: 'Navigate commands in the autocomplete palette' },
-  { keys: 'Enter / Tab', desc: 'Insert highlighted slash command' },
-  { keys: 'Esc', desc: 'Close autocomplete palette' },
-  { keys: 'Enter', desc: 'Send message in Workbench' },
-  { keys: 'Shift + Enter', desc: 'Insert newline without sending' },
+  { keys: 'Tab / Shift+Tab', desc: 'Move focus cleanly across interactive controls and command cards' },
+  { keys: 'Enter / Space', desc: 'Activate focused buttons, command chips, and accordions' },
+  { keys: 'Esc', desc: 'Close active command detail sheet or variable modal' },
 ];
 
 export const SettingsScreen: React.FC = () => {
@@ -192,7 +189,7 @@ export const SettingsScreen: React.FC = () => {
         <div>
           <h3 className="font-display text-base font-semibold">Default Commands</h3>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Automatically pre-selected whenever you open a fresh Workbench prompt (e.g. /no-fluff).
+            Automatically applied when opening generic prompts in ChatGPT without explicit slash commands (e.g. /no-fluff).
           </p>
         </div>
 

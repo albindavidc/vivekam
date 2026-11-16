@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { PlusCircle, Trash2, Terminal, CheckCircle2 } from 'lucide-react';
+import { PlusCircle, Trash2, ExternalLink, CheckCircle2 } from 'lucide-react';
 import { BUILT_IN_COMMANDS, COMMAND_GROUPS, GROUP_ORDER } from '@/src/data/commands';
 import { buildSystemInstruction } from '@/src/lib/commandEngine';
 import { useAllCommands, useAppStore } from '@/src/store/useAppStore';
@@ -10,7 +10,7 @@ export const CustomCommandCreator: React.FC = () => {
   const customCommands = useAppStore((s) => s.customCommands);
   const addCustomCommand = useAppStore((s) => s.addCustomCommand);
   const deleteCustomCommand = useAppStore((s) => s.deleteCustomCommand);
-  const sendToWorkbench = useAppStore((s) => s.sendToWorkbench);
+  const openPromptInChatGpt = useAppStore((s) => s.openPromptInChatGpt);
   const showToast = useAppStore((s) => s.showToast);
 
   const [slug, setSlug] = useState('kerala-context');
@@ -102,7 +102,7 @@ export const CustomCommandCreator: React.FC = () => {
           Custom Command Creator
         </h2>
         <p className="text-sm text-slate-600 dark:text-slate-400">
-          Build your own slash commands. Once saved, they immediately appear in the Workbench palette, Command Library, and Always-On Setup.
+          Build your own slash commands. Once saved, they immediately appear in the Command Library and Always-On Setup.
         </p>
       </div>
 
@@ -223,8 +223,8 @@ export const CustomCommandCreator: React.FC = () => {
 
           <div className="space-y-1.5">
             <span className="text-xs font-semibold">Conflicts With (Optional)</span>
-            <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto p-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0B0D12]">
-              {BUILT_IN_COMMANDS.slice(0, 18).map((c) => {
+            <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0B0D12]">
+              {BUILT_IN_COMMANDS.map((c) => {
                 const selected = conflictsWith.includes(c.slash);
                 return (
                   <button
@@ -286,7 +286,7 @@ export const CustomCommandCreator: React.FC = () => {
             </h3>
             {customCommands.length === 0 ? (
               <p className="text-xs text-slate-500">
-                Save your first custom command on the left to reuse it across Srishti.
+                Save your first custom command on the left to reuse it across Vivekam.
               </p>
             ) : (
               <div className="space-y-2.5">
@@ -308,11 +308,11 @@ export const CustomCommandCreator: React.FC = () => {
                     <div className="flex items-center gap-1 shrink-0">
                       <button
                         type="button"
-                        onClick={() => sendToWorkbench(testMessage, [cmd.slash])}
+                        onClick={() => openPromptInChatGpt(testMessage, [cmd.slash])}
                         className="p-1.5 text-slate-500 hover:text-amber-500 cursor-pointer"
-                        title="Try in Workbench"
+                        title="Try in ChatGPT"
                       >
-                        <Terminal className="w-3.5 h-3.5" />
+                        <ExternalLink className="w-3.5 h-3.5" />
                       </button>
                       <button
                         type="button"

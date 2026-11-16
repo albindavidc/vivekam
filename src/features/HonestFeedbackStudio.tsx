@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { ShieldAlert, Flame, CheckCircle2, HelpCircle, ArrowRight, Bookmark, RotateCcw, Square } from 'lucide-react';
+import { ShieldAlert, Flame, CheckCircle2, HelpCircle, ArrowRight, Bookmark, RotateCcw, Square, ExternalLink } from 'lucide-react';
 import { buildSystemInstruction } from '@/src/lib/commandEngine';
 import { generateJSON, getFriendlyErrorMessage } from '@/src/lib/gemini';
 import { FEEDBACK_REPORT_SCHEMA, isFeedbackReport } from '@/src/lib/schemas';
@@ -27,7 +27,7 @@ export const HonestFeedbackStudio: React.FC = () => {
   const allCommands = useAllCommands();
   const settings = useAppStore((s) => s.settings);
   const savePromptItem = useAppStore((s) => s.savePromptItem);
-  const sendToWorkbench = useAppStore((s) => s.sendToWorkbench);
+  const openPromptInChatGpt = useAppStore((s) => s.openPromptInChatGpt);
   const showToast = useAppStore((s) => s.showToast);
 
   const [draft, setDraft] = useState(SAMPLE_IDEAS[0].text);
@@ -426,15 +426,15 @@ export const HonestFeedbackStudio: React.FC = () => {
             <button
               type="button"
               onClick={() =>
-                sendToWorkbench(
+                openPromptInChatGpt(
                   `Follow up on this evaluation (${report.verdict}):\n\nOriginal plan:\n${draft}`,
                   [activeLens?.slash ?? '/redteam', '/action-plan']
                 )
               }
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500/15 text-amber-700 dark:text-amber-300 hover:bg-amber-500/25 cursor-pointer"
             >
-              Continue in Workbench
-              <ArrowRight className="w-3.5 h-3.5" />
+              Continue in ChatGPT
+              <ExternalLink className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>

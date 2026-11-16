@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="8" y1="4" x2="56" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#171B26" />
+      <stop offset="100%" stop-color="#0B0D12" />
+    </linearGradient>
+    <radialGradient id="amberGlow" cx="50%" cy="48%" r="46%">
+      <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.28" />
+      <stop offset="100%" stop-color="#F59E0B" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="slashGrad" x1="39" y1="14" x2="25" y2="50" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FCD34D" />
+      <stop offset="50%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#EA580C" />
+    </linearGradient>
+    <linearGradient id="bracketGrad" x1="16" y1="20" x2="48" y2="44" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#F8FAFC" />
+      <stop offset="100%" stop-color="#94A3B8" />
+    </linearGradient>
+  </defs>
+
+  <!-- Obsidian Squircle Tile -->
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#bgGrad)" />
+  <rect x="2.75" y="2.75" width="58.5" height="58.5" rx="15.25" stroke="#FFFFFF" stroke-opacity="0.14" stroke-width="1.5" />
+
+  <!-- Subtle Ambient Amber Aura -->
+  <circle cx="32" cy="32" r="26" fill="url(#amberGlow)" />
+
+  <!-- Left Bracket < -->
+  <path
+    d="M21 23L12.5 32L21 41"
+    stroke="url(#bracketGrad)"
+    stroke-width="4.25"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Right Bracket > -->
+  <path
+    d="M43 23L51.5 32L43 41"
+    stroke="url(#bracketGrad)"
+    stroke-width="4.25"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Central Glowing Amber Slash / -->
+  <path
+    d="M38.5 16L25.5 48"
+    stroke="#F59E0B"
+    stroke-opacity="0.35"
+    stroke-width="8"
+    stroke-linecap="round"
+  />
+  <path
+    d="M38.5 16L25.5 48"
+    stroke="url(#slashGrad)"
+    stroke-width="5.25"
+    stroke-linecap="round"
+  />
+</svg>

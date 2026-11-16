@@ -1,0 +1,6 @@
+{
+  "name": "Srishti",
+  "description": "A slash-command prompt-engineering workbench for Gemini, turning short behaviour shortcuts into precise structured prompts.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

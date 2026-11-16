@@ -224,7 +224,9 @@ export const CustomCommandCreator: React.FC = () => {
           <div className="space-y-1.5">
             <span className="text-xs font-semibold">Conflicts With (Optional)</span>
             <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0B0D12]">
-              {BUILT_IN_COMMANDS.map((c) => {
+              {Array.from(
+                new Map(BUILT_IN_COMMANDS.map((c) => [c.slash.toLowerCase(), c])).values()
+              ).map((c) => {
                 const selected = conflictsWith.includes(c.slash);
                 return (
                   <button

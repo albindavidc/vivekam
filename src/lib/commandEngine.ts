@@ -40,7 +40,10 @@ export function parseMessage(text: string, availableCommands: Command[]): Parsed
 
   const bySlash = new Map<string, Command>();
   for (const cmd of availableCommands) {
-    bySlash.set(normalizeSlash(cmd.slash), cmd);
+    const norm = normalizeSlash(cmd.slash);
+    if (!bySlash.has(norm)) {
+      bySlash.set(norm, cmd);
+    }
   }
 
   const foundCommands: Command[] = [];

@@ -71,4 +71,18 @@ export const PROMPT_TEMPLATES: PromptTemplate[] = [
     examples: '',
     suggestedCommands: ['/hooks', '/humanize', '/shorten'],
   },
+  {
+    id: 'tpl-deal-check',
+    title: 'Sale Deal Check (Before You Buy)',
+    category: 'Sales & Shopping',
+    description: 'Verify inflated MRP, bank/coupon fine print, exact variant, and alternatives before paying.',
+    role: 'Unbiased consumer electronics and online deal auditor',
+    context: 'Product: {{product_name}}. Listed sale price: {{sale_price}}. Shown MRP: {{shown_mrp}}. Store: {{store_name}}.',
+    task: 'Audit whether this sale price is genuinely good by checking typical launch/street price, inflated MRP, hidden bank card/coupon/exchange conditions, exact RAM/storage variant, and 2 better alternatives in this budget.',
+    constraints: 'Be honest even if the answer is do not buy. Flag numbers that cannot be verified without opening the product page.',
+    outputFormat: '1) Buy / Wait / Skip verdict\n2) Price & MRP reality check\n3) Variant & fine-print catches\n4) 2 better alternatives at this price',
+    tone: 'Direct, skeptical, shopper-first',
+    examples: '',
+    suggestedCommands: ['/realitycheck', '/pros-cons', '/no-fluff'],
+  },
 ];

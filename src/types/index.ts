@@ -4,7 +4,17 @@ export type CommandGroupId =
   | 'coding'
   | 'business'
   | 'writing'
-  | 'decisions';
+  | 'decisions'
+  | 'sales';
+
+export type CommandLibraryFilter = 'all' | 'favorites' | CommandGroupId;
+
+export interface SalesCommandMeta {
+  commandId: string;
+  slash: string;
+  dealSummary: string;
+  dealExample: string;
+}
 
 export interface CommandGroupMeta {
   id: CommandGroupId;

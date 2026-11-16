@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BUILT_IN_COMMANDS } from '@/src/data/commands';
+import { BUILT_IN_COMMANDS, DEAL_CHECK_PROMPT, SALES_DEAL_COMMANDS } from '@/src/data/commands';
 import {
   buildAlwaysOnSetup,
   buildSystemInstruction,
@@ -18,15 +18,14 @@ const EXPECTED_BY_GROUP: Record<string, string[]> = {
   business: ['/startup-mode', '/business-plan', '/validate-idea', '/ROI', '/career-coach', '/interview-mode', '/prioritize', '/opportunity-cost'],
   writing: ['/rewrite', '/professional', '/casual', '/persuasive', '/shorten', '/humanize', '/hooks', '/viral'],
   decisions: ['/decision', '/checklist', '/action-plan', '/80-20', '/priorities', '/what-if', '/second-opinion', '/coach-me'],
+  sales: ['/realitycheck', '/pros-cons', '/decision', '/second-opinion', '/redteam', '/no-fluff', '/opportunity-cost'],
 };
 
 describe('Vivekam Command Registry', () => {
-  it('contains all 48 built-in commands across 6 groups without duplicates or omissions', () => {
-    expect(BUILT_IN_COMMANDS).toHaveLength(48);
+  it('contains all 55 built-in commands across 7 groups (48 core + 7 sales) without duplicate IDs', () => {
+    expect(BUILT_IN_COMMANDS).toHaveLength(55);
     const ids = new Set(BUILT_IN_COMMANDS.map((c) => c.id));
-    const slashes = new Set(BUILT_IN_COMMANDS.map((c) => c.slash.toLowerCase()));
-    expect(ids.size).toBe(48);
-    expect(slashes.size).toBe(48);
+    expect(ids.size).toBe(55);
 
     for (const [group, expectedSlashes] of Object.entries(EXPECTED_BY_GROUP)) {
       const actualSlashes = BUILT_IN_COMMANDS.filter((c) => c.group === group).map((c) => c.slash);
@@ -34,7 +33,7 @@ describe('Vivekam Command Registry', () => {
     }
   });
 
-  it('includes all 7 deal-check commands from the reference sheet', () => {
+  it('includes all 7 deal-check commands from the reference sheet with sales tags and deal metadata', () => {
     const dealCheckCommands = [
       '/realitycheck',
       '/pros-cons',
@@ -44,22 +43,33 @@ describe('Vivekam Command Registry', () => {
       '/no-fluff',
       '/opportunity-cost',
     ];
-    const available = new Set(BUILT_IN_COMMANDS.map((c) => c.slash));
-    for (const cmd of dealCheckCommands) {
-      expect(available.has(cmd)).toBe(true);
+    expect(SALES_DEAL_COMMANDS.map((c) => c.slash)).toEqual(dealCheckCommands);
+    expect(DEAL_CHECK_PROMPT).toContain('/realitycheck');
+
+    const byId = new Map(BUILT_IN_COMMANDS.map((c) => [c.id, c]));
+    for (const meta of SALES_DEAL_COMMANDS) {
+      const cmd = byId.get(meta.commandId);
+      expect(cmd).toBeDefined();
+      expect(cmd?.group).toBe('sales');
+      expect(cmd?.slash).toBe(meta.slash);
+      expect(cmd?.tags).toContain('sales');
+      expect(cmd?.tags).toContain('deals');
     }
   });
 
-  it('parses all 48 commands case-insensitively and includes all 48 in Always-On Setup', () => {
+  it('parses all command slashes case-insensitively and includes all 55 commands in Always-On Setup', () => {
     const compactSetup = buildAlwaysOnSetup(BUILT_IN_COMMANDS, 'compact');
     const detailedSetup = buildAlwaysOnSetup(BUILT_IN_COMMANDS, 'detailed');
 
     for (const cmd of BUILT_IN_COMMANDS) {
       const parsed = parseMessage(`Test query ${cmd.slash.toLowerCase()}`, BUILT_IN_COMMANDS);
-      expect(parsed.commands.map((c) => c.id)).toEqual([cmd.id]);
+      expect(parsed.commands).toHaveLength(1);
+      expect(parsed.commands[0].slash.toLowerCase()).toBe(cmd.slash.toLowerCase());
       expect(compactSetup).toContain(cmd.slash);
-      expect(detailedSetup).toContain(cmd.slash);
+      expect(detailedSetup).toContain(cmd.directive);
     }
+    expect(compactSetup).toContain('Sales & Deals:');
+    expect(detailedSetup).toContain('## Sales & Deals');
   });
 });
 

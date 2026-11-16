@@ -1,4 +1,4 @@
-import type { Command, CommandGroupId, CommandGroupMeta } from '@/src/types';
+import type { Command, CommandGroupId, CommandGroupMeta, SalesCommandMeta } from '@/src/types';
 
 export const COMMAND_GROUPS: Record<CommandGroupId, CommandGroupMeta> = {
   learn: {
@@ -67,6 +67,17 @@ export const COMMAND_GROUPS: Record<CommandGroupId, CommandGroupMeta> = {
     accentBgClass: 'bg-violet-500/10 dark:bg-violet-400/10',
     dotClass: 'bg-violet-500',
   },
+  sales: {
+    id: 'sales',
+    name: 'Sales & Deals',
+    nameMl: 'സെയിൽസ് & ഡീൽ ചെക്ക്',
+    description: 'Audit online sale prices, spot inflated MRPs, check variants, and avoid impulse buys.',
+    accentHex: '#14B8A6',
+    accentTextClass: 'text-teal-600 dark:text-teal-400',
+    accentBorderClass: 'border-teal-500/30 dark:border-teal-400/25',
+    accentBgClass: 'bg-teal-500/10 dark:bg-teal-400/10',
+    dotClass: 'bg-teal-500',
+  },
 };
 
 export const GROUP_ORDER: CommandGroupId[] = [
@@ -76,6 +87,7 @@ export const GROUP_ORDER: CommandGroupId[] = [
   'business',
   'writing',
   'decisions',
+  'sales',
 ];
 
 export const BUILT_IN_COMMANDS: Command[] = [
@@ -246,7 +258,7 @@ export const BUILT_IN_COMMANDS: Command[] = [
     malayalamNote: 'ഗുണവും ദോഷവും തൂക്കിനോക്കി ശരിയായ ബാലൻസ് കാണാൻ.',
     directive:
       'Present a structured comparison of upsides and downsides, tagging each point by impact weight (High, Medium, Low). Do not force false symmetry if one side is clearly heavier; conclude with who each choice actually fits.',
-    tags: ['comparison', 'tradeoffs', 'balanced'],
+    tags: ['comparison', 'tradeoffs', 'balanced', 'sales', 'deals'],
     conflictsWith: [],
     isCustom: false,
   },
@@ -260,7 +272,7 @@ export const BUILT_IN_COMMANDS: Command[] = [
     malayalamNote: 'പ്ലാൻ പൊളിയാൻ സാധ്യതയുള്ള എല്ലാ വഴികളും മുൻകൂട്ടി കണ്ടുപിടിക്കാൻ.',
     directive:
       'Assume the plan will fail. List the most likely failure points, hidden costs, operational bottlenecks, and adversarial risks; rank them by severity and likelihood, explain why each happens, and give one concrete mitigation each. Do not offer praise.',
-    tags: ['risk', 'premortem', 'stress-test'],
+    tags: ['risk', 'premortem', 'stress-test', 'sales', 'deals'],
     conflictsWith: [],
     isCustom: false,
   },
@@ -274,7 +286,7 @@ export const BUILT_IN_COMMANDS: Command[] = [
     malayalamNote: 'നമ്മുടെ പ്രതീക്ഷ പ്രായോഗികമാണോ എന്ന് യാഥാർത്ഥ്യവുമായി ഒത്തുനോക്കാൻ.',
     directive:
       'Compare the user’s expectations—timelines, costs, conversion rates, or outcomes—against realistic real-world benchmarks. State clearly whether the expectation is realistic, overly optimistic, or conservative, and provide a grounded likely range with reasoning.',
-    tags: ['benchmarks', 'realistic', 'grounded'],
+    tags: ['benchmarks', 'realistic', 'grounded', 'sales', 'deals'],
     conflictsWith: [],
     isCustom: false,
   },
@@ -302,7 +314,7 @@ export const BUILT_IN_COMMANDS: Command[] = [
     malayalamNote: 'ആമുഖവും ഉപസംഹാരവും ഇല്ലാതെ നേരെ പോയിന്റിലേക്ക് കടക്കാൻ.',
     directive:
       'Strip all introductory pleasantries, motivational filler, restatements of the prompt, and generic closing summaries. Start immediately with the substance in tight, high-signal bullets or short paragraphs.',
-    tags: ['concise', 'direct', 'signal'],
+    tags: ['concise', 'direct', 'signal', 'sales', 'deals'],
     conflictsWith: [],
     isCustom: false,
   },
@@ -530,7 +542,7 @@ export const BUILT_IN_COMMANDS: Command[] = [
     malayalamNote: 'ഇത് തിരഞ്ഞെടുക്കുമ്പോൾ നമ്മൾ നഷ്ടപ്പെടുത്തുന്ന മറ്റു അവസരങ്ങൾ ഏതൊക്കെ?',
     directive:
       'Analyze the hidden opportunity cost of the chosen path: the time, capital, focus, and alternative bets being sacrificed. Compare the expected value of the current choice against the best realistic alternative use of those exact resources.',
-    tags: ['tradeoffs', 'time', 'strategy'],
+    tags: ['tradeoffs', 'time', 'strategy', 'sales', 'deals'],
     conflictsWith: [],
     isCustom: false,
   },
@@ -660,7 +672,7 @@ export const BUILT_IN_COMMANDS: Command[] = [
     malayalamNote: 'ഓപ്ഷനുകൾ തമ്മിൽ താരതമ്യം ചെയ്ത് വ്യക്തമായ തീരുമാനമെടുക്കാൻ.',
     directive:
       'Frame the decision cleanly: clarify whether it is reversible (two-way door) or hard to reverse (one-way door), define 3–4 decision criteria weighted by importance, score each option honestly, and state the recommended pick with its trigger to revisit.',
-    tags: ['matrix', 'choices', 'clarity'],
+    tags: ['matrix', 'choices', 'clarity', 'sales', 'deals'],
     conflictsWith: [],
     isCustom: false,
   },
@@ -744,7 +756,7 @@ export const BUILT_IN_COMMANDS: Command[] = [
     malayalamNote: 'മറ്റൊരാളുടെ നിർദ്ദേശത്തിലോ ക്വോട്ടിലോ രണ്ടാമതൊരു അഭിപ്രായം തേടാൻ.',
     directive:
       'Act as an independent, unbiased specialist giving a second opinion on a proposal, quote, or diagnosis. Point out what looks reasonable, what feels inflated or missing, and two or three clarifying questions to ask the original source.',
-    tags: ['audit', 'sanity-check', 'independent'],
+    tags: ['audit', 'sanity-check', 'independent', 'sales', 'deals'],
     conflictsWith: [],
     isCustom: false,
   },
@@ -762,4 +774,157 @@ export const BUILT_IN_COMMANDS: Command[] = [
     conflictsWith: ['/no-fluff'],
     isCustom: false,
   },
+
+  // 7. Sales and deals (7)
+  {
+    id: 'sales-realitycheck',
+    slash: '/realitycheck',
+    group: 'sales',
+    label: 'Is This Deal as Good as It Looks?',
+    shortDescription: 'Check whether a sale discount is real or inflated MRP bait.',
+    example: 'Screenshot of the deal + "Is it a good deal? /realitycheck"',
+    malayalamNote: 'Sale-ലെ വലിയ ഓഫർ ശരിക്കും ലാഭമാണോ അതോ MRP കൂട്ടിക്കാണിച്ചതാണോ എന്ന് നോക്കാൻ.',
+    directive:
+      'Audit this shopping deal skeptically. Compare the listed sale price against realistic launch and typical street prices, flag inflated MRP anchoring, check whether bank cards, coupons, or exchange offers are baked into the headline price, and suggest 2 stronger alternatives in the same budget.',
+    tags: ['sales', 'deals', 'mrp'],
+    conflictsWith: [],
+    isCustom: false,
+  },
+  {
+    id: 'sales-pros-cons',
+    slash: '/pros-cons',
+    group: 'sales',
+    label: 'Good & Bad Points at a Glance',
+    shortDescription: 'Weighted strengths and trade-offs of a product at its sale price.',
+    example: 'iQOO Z11x 5G at ₹23,999 in the sale. /pros-cons',
+    malayalamNote: 'ഒരു ഉൽപ്പന്നത്തിന്റെ നല്ല വശങ്ങളും പോരായ്മകളും വാങ്ങുന്നതിന് മുൻപ് തൂക്കിനോക്കാൻ.',
+    directive:
+      'List the genuine pros and cons of buying this product specifically at the quoted sale price. Highlight real-world compromises (display, battery, software updates, warranty, or after-sales service) and state clearly who should buy or skip it.',
+    tags: ['sales', 'deals', 'comparison'],
+    conflictsWith: [],
+    isCustom: false,
+  },
+  {
+    id: 'sales-decision',
+    slash: '/decision',
+    group: 'sales',
+    label: 'Pick Between Two Deals',
+    shortDescription: 'Choose clearly when stuck between two models or brands on sale.',
+    example: 'boAt or Noise earbuds under ₹2,000? /decision',
+    malayalamNote: 'രണ്ട് പ്രോഡക്ടുകളിൽ ഏത് തിരഞ്ഞെടുക്കണം എന്ന കൺഫ്യൂഷൻ മാറ്റാൻ.',
+    directive:
+      'Compare the competing sale options across practical buyer criteria (reliability, real-world quality, service support, and effective price after bank/coupon terms). Pick one clear winner for typical use and state when the runner-up makes more sense.',
+    tags: ['sales', 'deals', 'choices'],
+    conflictsWith: [],
+    isCustom: false,
+  },
+  {
+    id: 'sales-second-opinion',
+    slash: '/second-opinion',
+    group: 'sales',
+    label: 'Double-Check a Planned Purchase',
+    shortDescription: 'Unbiased sanity check on an item you have already decided to buy.',
+    example: "I've decided to buy this 4K TV tonight. /second-opinion",
+    malayalamNote: 'വാങ്ങാൻ ഉറപ്പിച്ച സാധനത്തിൽ നാം കാണാതെ പോയ പ്രശ്നങ്ങൾ ഉണ്ടോ എന്ന് പരിശോധിക്കാൻ.',
+    directive:
+      'Give an independent pre-checkout second opinion on a purchase the buyer is ready to make. Point out what checks out, flag hidden catches (old model year, replacement-only returns, or overpriced variants), and give 3 quick checks before hitting Buy Now.',
+    tags: ['sales', 'deals', 'sanity-check'],
+    conflictsWith: [],
+    isCustom: false,
+  },
+  {
+    id: 'sales-redteam',
+    slash: '/redteam',
+    group: 'sales',
+    label: 'What Could Go Wrong With This Buy',
+    shortDescription: 'Uncover hidden catches, seller risks, and post-purchase regrets.',
+    example: 'Buying a phone from a lesser-known brand during a flash sale. /redteam',
+    malayalamNote: 'വാങ്ങിയ ശേഷം പണി കിട്ടാൻ സാധ്യതയുള്ള റിസ്കുകൾ മുൻകൂട്ടി കാണാൻ.',
+    directive:
+      'Red-team this purchase decision assuming something goes wrong after delivery. Surface seller/warranty risks, non-returnable fine print, missing charger/accessories, rapid price drops, and service-center gaps without sugarcoating.',
+    tags: ['sales', 'deals', 'risk'],
+    conflictsWith: [],
+    isCustom: false,
+  },
+  {
+    id: 'sales-no-fluff',
+    slash: '/no-fluff',
+    group: 'sales',
+    label: 'Skip the Specs, Just the Verdict',
+    shortDescription: 'Cut marketing copy and deliver a blunt buy, wait, or skip verdict.',
+    example: 'Best ANC earbuds under ₹3,000 right now? /no-fluff',
+    malayalamNote: 'നീണ്ട റിവ്യൂ ഇല്ലാതെ വാങ്ങണോ വേണ്ടയോ എന്ന ഒറ്റമറുപടി കിട്ടാൻ.',
+    directive:
+      'Skip generic spec summaries and marketing hype. Open immediately with a direct Buy, Wait, or Skip verdict, followed by the top 3 concrete reasons and exact caveats in tight bullet points.',
+    tags: ['sales', 'deals', 'direct'],
+    conflictsWith: [],
+    isCustom: false,
+  },
+  {
+    id: 'sales-opportunity-cost',
+    slash: '/opportunity-cost',
+    group: 'sales',
+    label: 'What Else That Money Could Do',
+    shortDescription: 'Weigh spending now against waiting or using that budget better.',
+    example: '₹24,000 phone now or wait for the next sale? /opportunity-cost',
+    malayalamNote: 'ഈ പണം ഇപ്പോൾ ചെലവാക്കിയാൽ നഷ്ടമാകുന്ന മറ്റു അവസരങ്ങൾ ആലോചിക്കാൻ.',
+    directive:
+      'Evaluate the opportunity cost of spending this amount in the current sale. Compare buying now versus waiting for the next sale cycle, stepping down one tier, or allocating the difference elsewhere.',
+    tags: ['sales', 'deals', 'budget'],
+    conflictsWith: [],
+    isCustom: false,
+  },
 ];
+
+export const SALES_DEAL_COMMANDS: SalesCommandMeta[] = [
+  {
+    commandId: 'sales-realitycheck',
+    slash: '/realitycheck',
+    dealSummary: 'Check if a sale discount is genuinely cheaper or just inflated MRP.',
+    dealExample: 'Screenshot of the deal + "Is it a good deal? /realitycheck"',
+  },
+  {
+    commandId: 'sales-pros-cons',
+    slash: '/pros-cons',
+    dealSummary: 'See weighted strengths and catches of the product at the sale price.',
+    dealExample: 'iQOO Z11x 5G at ₹23,999 in the sale. /pros-cons',
+  },
+  {
+    commandId: 'sales-decision',
+    slash: '/decision',
+    dealSummary: 'Pick a clear winner when comparing two models or brands on sale.',
+    dealExample: 'boAt or Noise earbuds under ₹2,000? /decision',
+  },
+  {
+    commandId: 'sales-second-opinion',
+    slash: '/second-opinion',
+    dealSummary: 'Get an unbiased sanity check on a purchase you already want to make.',
+    dealExample: "I've decided to buy this 4K TV tonight. /second-opinion",
+  },
+  {
+    commandId: 'sales-redteam',
+    slash: '/redteam',
+    dealSummary: 'Surface warranty traps, hidden fees, or what could go wrong post-purchase.',
+    dealExample: 'Buying a phone from a lesser-known brand during a flash sale. /redteam',
+  },
+  {
+    commandId: 'sales-no-fluff',
+    slash: '/no-fluff',
+    dealSummary: 'Skip long spec sheets and jump straight to the buy-or-skip verdict.',
+    dealExample: 'Best ANC earbuds under ₹3,000 right now? /no-fluff',
+  },
+  {
+    commandId: 'sales-opportunity-cost',
+    slash: '/opportunity-cost',
+    dealSummary: 'Weigh what else that cash could buy or if waiting beats buying now.',
+    dealExample: 'Spend ₹24,000 on a phone now or wait for the next sale? /opportunity-cost',
+  },
+];
+
+export const DEAL_CHECK_PROMPT = `Before I buy this deal (screenshot attached):
+1. What was the launch price, and what does it usually sell for?
+2. Is the MRP / "original price" inflated?
+3. Does this price need a coupon, bank card or exchange?
+4. Which variant (RAM / storage / colour) is this price for?
+5. Give me 2 better alternatives at this price.
+Be honest even if the answer is "don't buy". /realitycheck`;

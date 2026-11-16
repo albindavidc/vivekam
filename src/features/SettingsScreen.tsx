@@ -194,7 +194,9 @@ export const SettingsScreen: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto pt-1">
-          {allCommands.map((cmd) => {
+          {Array.from(
+            new Map(allCommands.map((cmd) => [cmd.slash.toLowerCase(), cmd])).values()
+          ).map((cmd) => {
             const active = settings.defaultCommands.includes(cmd.slash);
             return (
               <button

@@ -13,6 +13,7 @@ import type {
   ActiveScreen,
   AppState,
   Command,
+  CommandLibraryFilter,
   Conversation,
   Message,
   SavedPrompt,
@@ -28,9 +29,13 @@ export interface ToastItem {
 
 interface VivekamStore extends AppState {
   activeScreen: ActiveScreen;
+  exploreMode: 'normal' | 'sales';
+  commandFilter: CommandLibraryFilter;
   toasts: ToastItem[];
 
   setActiveScreen: (screen: ActiveScreen) => void;
+  setExploreMode: (mode: 'normal' | 'sales') => void;
+  setCommandFilter: (filter: CommandLibraryFilter) => void;
   showToast: (message: string, tone?: ToastItem['tone']) => void;
   dismissToast: (id: string) => void;
 
@@ -93,9 +98,13 @@ function persistFromState(state: AppState) {
 export const useAppStore = create<VivekamStore>((set, get) => ({
   ...initialPersisted,
   activeScreen: 'explore',
+  exploreMode: 'normal',
+  commandFilter: 'all',
   toasts: [],
 
   setActiveScreen: (screen) => set({ activeScreen: screen }),
+  setExploreMode: (exploreMode) => set({ exploreMode }),
+  setCommandFilter: (commandFilter) => set({ commandFilter }),
 
   showToast: (message, tone = 'info') => {
     const id = makeId('toast');
